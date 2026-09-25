@@ -34,6 +34,7 @@ function update(){
  $("time").textContent=(hour===0?"12":hour)+" AM";$("power").textContent="Energía: "+Math.max(0,Math.floor(power))+"%";
  $("door").style.display=atDoor?"none":"block";$("door").classList.toggle("open",!closed);
  $("doorArea").style.backgroundImage=`url("assets/${closed?"puerta_cerca_cerrada":doorLight?"puerta_cerca_encendida":"puerta_cerca"}.png")`;
+ $("rightDoorView").style.backgroundImage=`url("assets/${closed?"puerta_cerca_cerrada":"pasillo_largo"}.png")`;
  $("windowLight").style.opacity=windowLight?"1":"0";$("doorViewLight").style.opacity=(atDoor&&doorLight)?"1":"0";$("blackout").style.opacity=officeLight?"0":"0.55";
  $("game").style.backgroundImage=`url("assets/${officeLight?"oficina_luz":"oficina_apagada"}.png")`;
  $("monster").style.opacity=(windowLight&&monsterPos>=3)||officeLight&&monsterPos>=3?"1":"0";

@@ -6,19 +6,19 @@
 <title>FNAF Simple - Texturas editables</title>
 <style>
 *{box-sizing:border-box} body{margin:0;background:#000;color:#ddd;font-family:Arial;overflow:hidden}
-#game{height:100vh;position:relative;background:#050505 url("assets/office.svg") center/cover no-repeat}
+#game{height:100vh;position:relative;background:#050505 url("assets/oficina_apagada.svg") center/cover no-repeat}
 #hud{position:absolute;z-index:20;top:12px;left:15px;right:15px;display:flex;justify-content:space-between;font-size:18px;text-shadow:0 2px 4px #000}
-#window{position:absolute;top:8%;left:50%;transform:translateX(-50%);width:54%;height:58%;background:#000 url("assets/window.svg") center/cover;border:18px solid #151515;box-shadow:inset 0 0 50px #000,0 0 30px #000;overflow:hidden}
-#windowLight{position:absolute;inset:0;background:radial-gradient(circle,#77776a,#292925 45%,#050505 85%);opacity:0;transition:.15s;z-index:2}
+#window{position:absolute;top:8%;left:50%;transform:translateX(-50%);width:54%;height:58%;background:#000 url("assets/ventana.svg") center/cover;border:18px solid #151515;box-shadow:inset 0 0 50px #000,0 0 30px #000;overflow:hidden}
+#windowLight{position:absolute;inset:0;background:url("assets/luz_ventana.svg") center/cover no-repeat;opacity:0;transition:.15s;z-index:2}
 #monster{position:absolute;bottom:3%;left:50%;transform:translateX(-50%);width:180px;height:300px;opacity:0;transition:.2s;z-index:3}
 #monster img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 0 12px #000)}
-#doorArea{position:absolute;right:0;top:0;height:100%;width:22%;overflow:hidden;border-left:8px solid #191919}
-#door{position:absolute;inset:0;background:#333 url("assets/door.svg") center/cover;transition:.35s}
+#doorArea{position:absolute;right:0;top:0;height:100%;width:22%;overflow:hidden;border-left:8px solid #191919;background:url("assets/puerta.svg") center/cover}
+#door{position:absolute;inset:0;background:url("assets/puerta.svg") center/cover;transition:.35s}
 #door.open{transform:translateX(100%)}
 #doorLight{position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,255,220,.05),rgba(255,255,220,.75));opacity:0;pointer-events:none;transition:.12s;z-index:4}
-#rightDoorView{position:absolute;inset:0;background:#080808 url("assets/office.svg") center/cover;display:none;z-index:24}
+#rightDoorView{position:absolute;inset:0;background:#080808 url("assets/puerta_cerca.svg") center/cover;display:none;z-index:24}
 #rightDoorView .hall{position:absolute;right:0;top:0;width:55%;height:100%;background:linear-gradient(90deg,#090909,#222,#050505);border-left:15px solid #151515}
-#rightDoorView .doorTexture{position:absolute;right:8%;top:22%;width:32%;height:58%;background:url("assets/door.svg") center/cover;box-shadow:0 0 40px #000}
+#rightDoorView .doorTexture{position:absolute;right:8%;top:22%;width:32%;height:58%;background:url("assets/puerta.svg") center/cover;box-shadow:0 0 40px #000}
 #controls{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:10px;z-index:30;flex-wrap:wrap;justify-content:center}
 #movePanel{position:absolute;bottom:95px;right:4%;display:none;z-index:30}
 button{background:#1c1c1c;color:#eee;border:2px solid #555;padding:13px 18px;border-radius:6px;font-weight:bold;cursor:pointer}
@@ -53,9 +53,9 @@ function update(){
  $("time").textContent=(hour===0?"12":hour)+" AM";
  $("power").textContent="Energía: "+Math.max(0,Math.floor(power))+"%";
  $("door").classList.toggle("open",!closed);
- $("doorLight").style.opacity=doorLight?"1":"0";
+ $("doorLight").style.opacity=doorLight?"1":"0"; $("doorArea").style.backgroundImage=`url("assets/${closed?"puerta_cerca_cerrada":doorLight?"puerta_cerca_encendida":"puerta_cerca"}.svg")`;
  $("windowLight").style.opacity=windowLight?"1":"0";
- $("blackout").style.opacity=officeLight?"0":"0.55";
+ $("blackout").style.opacity=officeLight?"0":"0.55"; $("game").style.backgroundImage=`url("assets/${officeLight?"oficina_luz":"oficina_apagada"}.svg")`;
  $("monster").style.opacity=(windowLight&&monsterPos>=3)||officeLight&&monsterPos>=3?"1":"0";
  $("doorLamp").textContent=doorLight?"Apagar luz de puerta":"Encender luz de puerta";
  $("officeLamp").textContent=officeLight?"Apagar luz oficina":"Encender luz oficina";

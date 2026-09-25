@@ -20,6 +20,7 @@
 .keyRow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:7px 0}.keyRow span{font-size:14px}
 .keyBind{min-width:90px;padding:8px 10px}
 button{background:#1c1c1c;color:#eee;border:2px solid #555;padding:13px 18px;border-radius:6px;font-weight:bold;cursor:pointer}button:hover{background:#333}
+#mouseLight{position:absolute;width:280px;height:220px;pointer-events:none;z-index:25;transform:translate(-50%,-50%);background:radial-gradient(ellipse,rgba(255,255,220,.42) 0%,rgba(255,255,220,.16) 38%,rgba(0,0,0,0) 72%);mix-blend-mode:screen;display:none}
 #blackout{position:absolute;inset:0;background:#000;opacity:.55;pointer-events:none;z-index:20;transition:.1s}
 #message,#jumpscare{position:absolute;inset:0;z-index:100;display:none;align-items:center;justify-content:center;text-align:center}#message{font-size:30px;background:rgba(0,0,0,.7)}#jumpscare{background:#000}#jumpscare img{width:min(55vw,420px);max-height:75vh;object-fit:contain}
 </style></head><body><div id="game">
@@ -39,11 +40,11 @@ button{background:#1c1c1c;color:#eee;border:2px solid #555;padding:13px 18px;bor
 <button id="closeKeyConfig" style="width:100%;margin-top:8px">Cerrar configuración</button>
 </div>
 <button id="openKeyConfig" style="position:absolute;right:15px;bottom:20px;z-index:70">⌨️ Configurar teclas</button>
-<div id="blackout"></div><div id="message"></div><div id="jumpscare"><img src="assets/animatronic.png"></div>
+<div id="mouseLight"></div><div id="blackout"></div><div id="message"></div><div id="jumpscare"><img src="assets/animatronic.png"></div>
 </div>
 <script>
 const $=id=>document.getElementById(id);
-let power=100,hour=0,sec=0,playing=true,atDoor=false,closed=false,doorLight=false,officeLight=false,windowLight=false,monsterPos=0,transitioning=false;
+let power=100,hour=0,sec=0,playing=true,atDoor=false,closed=false,doorLight=false,officeLight=false,windowLight=false,monsterPos=0,transitioning=false,mouseX=innerWidth/2,mouseY=innerHeight/2,mouseLight=false;
 const defaultKeys={door:"e",doorLight:"l",officeLight:"o",windowLight:"v",closeDoor:"c"};
 let keys={...defaultKeys},waitingAction=null;
 try{keys={...defaultKeys,...JSON.parse(localStorage.getItem("fnafKeys")||"{}")}}catch(e){}
@@ -66,6 +67,7 @@ function update(){
  $("rightDoorView").style.backgroundImage=`url("assets/${closed?"puerta_cerca_cerrada":"pasillo_largo"}.png")`;
  $("windowLight").style.opacity=windowLight?"1":"0";$("doorViewLight").style.opacity=(atDoor&&doorLight&&!closed)?"1":"0";$("blackout").style.opacity=officeLight?"0":"0.55";
  $("game").style.backgroundImage=`url("assets/${officeLight?"oficina_luz":"oficina_apagada"}.png")`;
+ $("mouseLight").style.display=mouseLight&&!atDoor?"block":"none";$("mouseLight").style.left=mouseX+"px";$("mouseLight").style.top=mouseY+"px";
  $("monster").style.opacity=(windowLight&&monsterPos>=3)||officeLight&&monsterPos>=3?"1":"0";
  $("doorLamp").textContent=doorLight?"Apagar luz de puerta":"Encender luz de puerta";
  $("doorLampAtDoor").textContent=doorLight?"Apagar luz":"Encender luz";
@@ -89,6 +91,20 @@ $("doorLamp").onclick=toggleDoorLight;$("doorLampAtDoor").onclick=toggleDoorLigh
 $("closeDoor").onclick=()=>{closed=!closed;if(closed&&monsterPos>=2)monsterPos=1;power-=1.5;update()};
 $("officeLamp").onclick=()=>{officeLight=!officeLight;power-=.5;update()};
 $("windowLamp").onclick=()=>{windowLight=!windowLight;power-=.7;if(windowLight&&monsterPos===3)monsterPos=1;update()};
+document.addEventListener("mousemove",e=>{mouseX=e.clientX;mouseY=e.clientY;if(mouseLight)update()});
+document.addEventListener("keydown",e=>{
+ if(!playing||e.repeat)return;
+ if(e.key==="Control"){
+   if(atDoor){toggleDoorLight()}else{mouseLight=!mouseLight;power-=.4;update()}
+   e.preventDefault();
+ }else if(e.key==="Shift"){
+   if(!atDoor){officeLight=!officeLight;power-=.5;update()}
+   e.preventDefault();
+ }else if(e.code==="Space"){
+   if(atDoor){$("closeDoor").click()}else{enterDoor()}
+   e.preventDefault();
+ }
+});
 $("openKeyConfig").onclick=()=>{$("keyConfig").style.display="block";$("openKeyConfig").style.display="none"};
 $("closeKeyConfig").onclick=()=>{$("keyConfig").style.display="none";$("openKeyConfig").style.display="block";waitingAction=null};
 document.querySelectorAll(".keyBind").forEach(b=>b.onclick=()=>{waitingAction=b.dataset.action;b.textContent="PRESIONA..."});

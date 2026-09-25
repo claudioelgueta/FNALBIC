@@ -15,6 +15,10 @@
 @keyframes walk{0%{opacity:1;transform:scale(1)}55%{opacity:1;transform:scale(1.12)}100%{opacity:0;transform:scale(1.2)}}
 #doorViewControls{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);display:none;gap:10px;z-index:60}
 #controls{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:10px;z-index:30;flex-wrap:wrap;justify-content:center}
+#keyConfig{position:absolute;right:15px;bottom:20px;z-index:70;background:rgba(10,10,10,.94);border:2px solid #555;border-radius:8px;padding:14px;display:none;width:min(360px,90vw);box-shadow:0 8px 30px #000}
+#keyConfig h3{margin:0 0 10px;font-size:18px}#keyConfig p{margin:0 0 10px;font-size:13px;color:#aaa}
+.keyRow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:7px 0}.keyRow span{font-size:14px}
+.keyBind{min-width:90px;padding:8px 10px}
 button{background:#1c1c1c;color:#eee;border:2px solid #555;padding:13px 18px;border-radius:6px;font-weight:bold;cursor:pointer}button:hover{background:#333}
 #blackout{position:absolute;inset:0;background:#000;opacity:.55;pointer-events:none;z-index:20;transition:.1s}
 #message,#jumpscare{position:absolute;inset:0;z-index:100;display:none;align-items:center;justify-content:center;text-align:center}#message{font-size:30px;background:rgba(0,0,0,.7)}#jumpscare{background:#000}#jumpscare img{width:min(55vw,420px);max-height:75vh;object-fit:contain}
@@ -25,11 +29,36 @@ button{background:#1c1c1c;color:#eee;border:2px solid #555;padding:13px 18px;bor
 <div id="rightDoorView"><div id="doorViewLight"></div></div><div id="doorTransition"></div>
 <div id="doorViewControls"><button id="doorLampAtDoor">Encender luz</button><button id="back">Volver</button><button id="closeDoor">Cerrar puerta</button></div>
 <div id="controls"><button id="goDoor">Ir a la puerta derecha</button><button id="doorLamp">Encender luz de puerta</button><button id="officeLamp">Encender luz oficina</button><button id="windowLamp">Luz de ventana</button></div>
+<div id="keyConfig">
+<h3>⌨️ Controles de teclado</h3><p>Haz clic en una tecla y luego presiona la tecla que quieras usar.</p>
+<div class="keyRow"><span>Ir a la puerta / volver</span><button class="keyBind" data-action="door">E</button></div>
+<div class="keyRow"><span>Luz de puerta</span><button class="keyBind" data-action="doorLight">L</button></div>
+<div class="keyRow"><span>Luz de oficina</span><button class="keyBind" data-action="officeLight">O</button></div>
+<div class="keyRow"><span>Luz de ventana</span><button class="keyBind" data-action="windowLight">V</button></div>
+<div class="keyRow"><span>Cerrar / abrir puerta</span><button class="keyBind" data-action="closeDoor">C</button></div>
+<button id="closeKeyConfig" style="width:100%;margin-top:8px">Cerrar configuración</button>
+</div>
+<button id="openKeyConfig" style="position:absolute;right:15px;bottom:20px;z-index:70">⌨️ Configurar teclas</button>
 <div id="blackout"></div><div id="message"></div><div id="jumpscare"><img src="assets/animatronic.png"></div>
 </div>
 <script>
 const $=id=>document.getElementById(id);
 let power=100,hour=0,sec=0,playing=true,atDoor=false,closed=false,doorLight=false,officeLight=false,windowLight=false,monsterPos=0,transitioning=false;
+const defaultKeys={door:"e",doorLight:"l",officeLight:"o",windowLight:"v",closeDoor:"c"};
+let keys={...defaultKeys},waitingAction=null;
+try{keys={...defaultKeys,...JSON.parse(localStorage.getItem("fnafKeys")||"{}")}}catch(e){}
+const keyNames={door:"Ir a la puerta / volver",doorLight:"Luz de puerta",officeLight:"Luz de oficina",windowLight:"Luz de ventana",closeDoor:"Cerrar / abrir puerta"};
+function saveKeys(){localStorage.setItem("fnafKeys",JSON.stringify(keys));updateKeyButtons()}
+function keyLabel(k){if(k===" ")return "ESPACIO";return k.length===1?k.toUpperCase():k.replace(/^Arrow/,"").toUpperCase()}
+function updateKeyButtons(){document.querySelectorAll(".keyBind").forEach(b=>b.textContent=keyLabel(keys[b.dataset.action]))}
+function runAction(action){
+ if(!playing)return;
+ if(action==="door"){if(atDoor){$("back").click()}else{enterDoor()}}
+ else if(action==="doorLight"){if(atDoor)$("doorLampAtDoor").click();else $("doorLamp").click()}
+ else if(action==="officeLight")$("officeLamp").click();
+ else if(action==="windowLight")$("windowLamp").click();
+ else if(action==="closeDoor"&&atDoor)$("closeDoor").click();
+}
 function update(){
  $("time").textContent=(hour===0?"12":hour)+" AM";$("power").textContent="Energía: "+Math.max(0,Math.floor(power))+"%";
  $("door").style.display=atDoor?"none":"block";$("door").classList.toggle("open",!closed);
@@ -60,6 +89,25 @@ $("doorLamp").onclick=toggleDoorLight;$("doorLampAtDoor").onclick=toggleDoorLigh
 $("closeDoor").onclick=()=>{closed=!closed;if(closed&&monsterPos>=2)monsterPos=1;power-=1.5;update()};
 $("officeLamp").onclick=()=>{officeLight=!officeLight;power-=.5;update()};
 $("windowLamp").onclick=()=>{windowLight=!windowLight;power-=.7;if(windowLight&&monsterPos===3)monsterPos=1;update()};
+$("openKeyConfig").onclick=()=>{$("keyConfig").style.display="block";$("openKeyConfig").style.display="none"};
+$("closeKeyConfig").onclick=()=>{$("keyConfig").style.display="none";$("openKeyConfig").style.display="block";waitingAction=null};
+document.querySelectorAll(".keyBind").forEach(b=>b.onclick=()=>{waitingAction=b.dataset.action;b.textContent="PRESIONA..."});
+document.addEventListener("keydown",e=>{
+ if(waitingAction){
+   e.preventDefault();e.stopPropagation();
+   if(e.key==="Escape"){waitingAction=null;updateKeyButtons();return}
+   const k=e.key.toLowerCase();
+   if(k==="tab"||k==="enter")return;
+   const used=Object.keys(keys).find(a=>keys[a]===k&&a!==waitingAction);
+   if(used)keys[used]=keys[waitingAction];
+   keys[waitingAction]=k;waitingAction=null;saveKeys();return;
+ }
+ if(e.repeat)return;
+ const k=e.key.toLowerCase();
+ const action=Object.keys(keys).find(a=>keys[a]===k);
+ if(action){e.preventDefault();runAction(action)}
+});
+updateKeyButtons();
 setInterval(()=>{if(!playing)return;sec++;power-=.07;
 if(sec%25===0){hour++;if(hour>=6){playing=false;end("¡6 AM! Sobreviviste la noche.");return}}
 if(sec%8===0){let chance=officeLight||doorLight||windowLight?.18:.10;if(Math.random()<chance&&monsterPos<3)monsterPos++;if(monsterPos===3&&!officeLight&&!windowLight&&Math.random()<.5)monsterPos=2}

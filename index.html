@@ -106,7 +106,7 @@ document.addEventListener("keydown",e=>{
  }
  if(e.repeat)return;
  if(e.key==="Shift"){
-   if(atDoor){toggleDoorLight()}
+   toggleDoorLight();
    e.preventDefault();
    return;
  }

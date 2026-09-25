@@ -14,7 +14,7 @@
 #doorTransition{position:absolute;inset:0;background:#000 url("assets/puerta_cerca.png") center/cover no-repeat;z-index:40;display:none;animation:walk .85s ease-in-out forwards}
 @keyframes walk{0%{opacity:1;transform:scale(1)}55%{opacity:1;transform:scale(1.12)}100%{opacity:0;transform:scale(1.2)}}
 #doorViewControls{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);display:none;gap:10px;z-index:60}
-#controls{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:10px;z-index:30;flex-wrap:wrap;justify-content:center}
+#controls{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:10px;z-index:60;flex-wrap:wrap;justify-content:center}#controls button{background:rgba(20,20,20,.45);border-color:rgba(255,255,255,.25);backdrop-filter:blur(3px);opacity:.75}#controls button:hover{background:rgba(60,60,60,.6);opacity:1}
 #keyConfig{position:absolute;right:15px;bottom:20px;z-index:70;background:rgba(10,10,10,.94);border:2px solid #555;border-radius:8px;padding:14px;display:none;width:min(360px,90vw);box-shadow:0 8px 30px #000}
 #keyConfig h3{margin:0 0 10px;font-size:18px}#keyConfig p{margin:0 0 10px;font-size:13px;color:#aaa}
 .keyRow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:7px 0}.keyRow span{font-size:14px}
@@ -29,6 +29,7 @@ button{background:#1c1c1c;color:#eee;border:2px solid #555;padding:13px 18px;bor
 <div id="doorArea"><div id="door"></div><div id="doorLight"></div></div>
 <div id="rightDoorView"><div id="doorViewLight"></div></div><div id="doorTransition"></div>
 <div id="doorViewControls"><button id="doorLampAtDoor">Encender luz</button><button id="back">Volver</button><button id="closeDoor">Cerrar puerta</button></div>
+<div id="controls"><button id="goDoor">🚪 Puerta</button><button id="doorLamp">💡 Luz puerta</button><button id="officeLamp">💡 Oficina</button><button id="windowLamp">🪟 Ventana</button><button id="closeDoor">🔒 Puerta</button></div>
 <div id="keyConfig">
 <h3>⌨️ Controles de teclado</h3><p>Haz clic en una tecla y luego presiona la tecla que quieras usar.</p>
 <div class="keyRow"><span>Ir a la puerta / volver</span><button class="keyBind" data-action="door">E</button></div>
@@ -86,6 +87,11 @@ $("doorArea").addEventListener("dblclick",()=>{if(!atDoor&&!transitioning)enterD
 $("back").onclick=()=>{if(!playing)return;atDoor=false;$("rightDoorView").style.display="none";$("doorViewControls").style.display="none";update()};
 function toggleDoorLight(){doorLight=!doorLight;power-=.6;if(doorLight&&monsterPos>=2)monsterPos=1;update()}
 $("doorLampAtDoor").onclick=toggleDoorLight;
+$("goDoor").onclick=()=>{if(atDoor){$("back").click()}else{enterDoor()}};
+$("doorLamp").onclick=toggleDoorLight;
+$("officeLamp").onclick=()=>{officeLight=!officeLight;power-=.5;update()};
+$("windowLamp").onclick=()=>{windowLight=!windowLight;power-=.7;if(windowLight&&monsterPos===3)monsterPos=1;update()};
+$("closeDoor").onclick=()=>{if(atDoor){closed=!closed;if(closed&&monsterPos>=2)monsterPos=1;power-=1.5;update()}};
 $("closeDoor").onclick=()=>{closed=!closed;if(closed&&monsterPos>=2)monsterPos=1;power-=1.5;update()};
 
 

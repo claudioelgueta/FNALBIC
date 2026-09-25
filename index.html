@@ -105,6 +105,7 @@ document.addEventListener("keydown",e=>{
    keys[waitingAction]=k;waitingAction=null;saveKeys();return;
  }
  if(e.repeat)return;
+ if(e.key==="Shift"){e.preventDefault();return}
  const k=e.key.toLowerCase();
  const action=Object.keys(keys).find(a=>keys[a]===k);
  if(action){e.preventDefault();runAction(action)}

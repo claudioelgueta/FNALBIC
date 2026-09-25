@@ -91,19 +91,6 @@ $("doorLamp").onclick=toggleDoorLight;$("doorLampAtDoor").onclick=toggleDoorLigh
 $("closeDoor").onclick=()=>{closed=!closed;if(closed&&monsterPos>=2)monsterPos=1;power-=1.5;update()};
 $("officeLamp").onclick=()=>{officeLight=!officeLight;power-=.5;update()};
 $("windowLamp").onclick=()=>{windowLight=!windowLight;power-=.7;if(windowLight&&monsterPos===3)monsterPos=1;update()};
-document.addEventListener("keydown",e=>{
- if(!playing||e.repeat)return;
- if(e.key==="Control"){
-   if(atDoor){toggleDoorLight()}
-   e.preventDefault();
- }else if(e.key==="Shift"){
-   if(!atDoor){officeLight=!officeLight;power-=.5;update()}
-   e.preventDefault();
- }else if(e.code==="Space"){
-   if(atDoor){$("closeDoor").click()}else{enterDoor()}
-   e.preventDefault();
- }
-});
 $("openKeyConfig").onclick=()=>{$("keyConfig").style.display="block";$("openKeyConfig").style.display="none"};
 $("closeKeyConfig").onclick=()=>{$("keyConfig").style.display="none";$("openKeyConfig").style.display="block";waitingAction=null};
 document.querySelectorAll(".keyBind").forEach(b=>b.onclick=()=>{waitingAction=b.dataset.action;b.textContent="PRESIONA..."});

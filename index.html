@@ -2,7 +2,7 @@
 <html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FNAF Simple - Texturas editables</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#000;color:#ddd;font-family:Arial;overflow:hidden}
-#game{height:100vh;position:relative;background:#050505 url("assets/oficina_apagada.png") center/cover no-repeat}
+#game{height:100vh;position:relative;overflow:hidden;background:#050505 url("assets/oficina_apagada.png") center/cover no-repeat;background-position:50% 50%;transition:background-position .12s ease}
 #hud{position:absolute;z-index:50;top:12px;left:15px;right:15px;display:flex;justify-content:space-between;font-size:18px;text-shadow:0 2px 4px #000}
 #window{position:absolute;top:8%;left:50%;transform:translateX(-50%);width:54%;height:58%;background:#000 url("assets/ventana.png") center/cover;border:18px solid #151515;box-shadow:inset 0 0 50px #000,0 0 30px #000;overflow:hidden}
 #windowLight{position:absolute;inset:0;background:url("assets/luz_ventana.png") center/cover no-repeat;opacity:0;transition:.15s;z-index:2}
@@ -92,6 +92,12 @@ $("windowLamp").onclick=()=>{windowLight=!windowLight;power-=.7;if(windowLight&&
 $("openKeyConfig").onclick=()=>{$("keyConfig").style.display="block";$("openKeyConfig").style.display="none"};
 $("closeKeyConfig").onclick=()=>{$("keyConfig").style.display="none";$("openKeyConfig").style.display="block";waitingAction=null};
 document.querySelectorAll(".keyBind").forEach(b=>b.onclick=()=>{waitingAction=b.dataset.action;b.textContent="PRESIONA..."});
+document.addEventListener("mousemove",e=>{
+ if(atDoor||transitioning||!playing)return;
+ const ratio=Math.max(0,Math.min(1,e.clientX/innerWidth));
+ const pos=20+(ratio*60);
+ $("game").style.backgroundPosition=pos+"% 50%";
+});
 document.addEventListener("keydown",e=>{
  if(waitingAction){
    e.preventDefault();e.stopPropagation();

@@ -10,7 +10,7 @@
 #doorArea{position:absolute;right:0;top:0;height:100%;width:22%;overflow:hidden;border-left:8px solid #191919;background:url("assets/puerta.svg") center/cover}
 #door{position:absolute;inset:0;background:url("assets/puerta.svg") center/cover;transition:.35s}#door.open{transform:translateX(100%)}
 #doorLight{position:absolute;inset:0;background:url("assets/puerta_cerca_encendida.svg") center/cover no-repeat;opacity:0;pointer-events:none;transition:.12s;z-index:4}
-#rightDoorView{position:absolute;inset:0;background:#000 url("assets/pasillo_largo.svg") center/cover no-repeat;display:none;z-index:24}
+#rightDoorView{position:absolute;inset:0;background:#000 url("assets/pasillo_largo.svg") center/cover no-repeat;display:none;z-index:24}#doorViewLight{position:absolute;inset:0;background:url("assets/pasillo_luz.svg") center/cover no-repeat;opacity:0;transition:.12s;pointer-events:none;z-index:25}
 #doorTransition{position:absolute;inset:0;background:#000 url("assets/puerta_cerca.svg") center/cover no-repeat;z-index:40;display:none;animation:walk .85s ease-in-out forwards}
 @keyframes walk{0%{opacity:1;transform:scale(1)}55%{opacity:1;transform:scale(1.12)}100%{opacity:0;transform:scale(1.2)}}
 #doorViewControls{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);display:none;gap:10px;z-index:60}
@@ -22,7 +22,7 @@ button{background:#1c1c1c;color:#eee;border:2px solid #555;padding:13px 18px;bor
 <div id="hud"><div id="time">12 AM</div><div id="power">Energía: 100%</div></div>
 <div id="window"><div id="windowLight"></div><div id="monster"><img src="assets/animatronic.svg"></div></div>
 <div id="doorArea"><div id="door"></div><div id="doorLight"></div></div>
-<div id="rightDoorView"></div><div id="doorTransition"></div>
+<div id="rightDoorView"><div id="doorViewLight"></div></div><div id="doorTransition"></div>
 <div id="doorViewControls"><button id="doorLampAtDoor">Encender luz</button><button id="back">Volver</button><button id="closeDoor">Cerrar puerta</button></div>
 <div id="controls"><button id="goDoor">Ir a la puerta derecha</button><button id="doorLamp">Encender luz de puerta</button><button id="officeLamp">Encender luz oficina</button><button id="windowLamp">Luz de ventana</button></div>
 <div id="blackout"></div><div id="message"></div><div id="jumpscare"><img src="assets/animatronic.svg"></div>
@@ -34,7 +34,7 @@ function update(){
  $("time").textContent=(hour===0?"12":hour)+" AM";$("power").textContent="Energía: "+Math.max(0,Math.floor(power))+"%";
  $("door").style.display=atDoor?"none":"block";$("door").classList.toggle("open",!closed);
  $("doorArea").style.backgroundImage=`url("assets/${closed?"puerta_cerca_cerrada":doorLight?"puerta_cerca_encendida":"puerta_cerca"}.svg")`;
- $("windowLight").style.opacity=windowLight?"1":"0";$("blackout").style.opacity=officeLight?"0":"0.55";
+ $("windowLight").style.opacity=windowLight?"1":"0";$("doorViewLight").style.opacity=(atDoor&&doorLight)?"1":"0";$("blackout").style.opacity=officeLight?"0":"0.55";
  $("game").style.backgroundImage=`url("assets/${officeLight?"oficina_luz":"oficina_apagada"}.svg")`;
  $("monster").style.opacity=(windowLight&&monsterPos>=3)||officeLight&&monsterPos>=3?"1":"0";
  $("doorLamp").textContent=doorLight?"Apagar luz de puerta":"Encender luz de puerta";

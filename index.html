@@ -14,7 +14,11 @@
 #doorTransition{position:absolute;inset:0;background:#000 url("assets/puerta_cerca.png") center/cover no-repeat;z-index:40;display:none;animation:walk .85s ease-in-out forwards}
 @keyframes walk{0%{opacity:1;transform:scale(1)}55%{opacity:1;transform:scale(1.12)}100%{opacity:0;transform:scale(1.2)}}
 #doorViewControls{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);display:none;gap:10px;z-index:60}
-#controls{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:10px;z-index:30;flex-wrap:wrap;justify-content:center}
+#controls{display:none}
+#touchControls{position:absolute;left:0;right:0;bottom:0;height:30%;z-index:65;display:flex;pointer-events:none}
+.touchZone{flex:1;height:100%;pointer-events:auto;background:rgba(0,0,0,0);border:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.touchZone:active{background:rgba(255,255,255,.05)}
+#touchHint{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:11px;color:rgba(255,255,255,.18);pointer-events:none}
 #keyConfig{position:absolute;right:15px;bottom:20px;z-index:70;background:rgba(10,10,10,.94);border:2px solid #555;border-radius:8px;padding:14px;display:none;width:min(360px,90vw);box-shadow:0 8px 30px #000}
 #keyConfig h3{margin:0 0 10px;font-size:18px}#keyConfig p{margin:0 0 10px;font-size:13px;color:#aaa}
 .keyRow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:7px 0}.keyRow span{font-size:14px}
@@ -30,6 +34,7 @@ button{background:#1c1c1c;color:#eee;border:2px solid #555;padding:13px 18px;bor
 <div id="rightDoorView"><div id="doorViewLight"></div></div><div id="doorTransition"></div>
 <div id="doorViewControls"><button id="doorLampAtDoor">Encender luz</button><button id="back">Volver</button><button id="closeDoor">Cerrar puerta</button></div>
 <div id="controls"><button id="goDoor">Ir a la puerta derecha</button><button id="doorLamp">Encender luz de puerta</button><button id="officeLamp">Encender luz oficina</button><button id="windowLamp">Luz de ventana</button></div>
+<div id="touchControls"><button class="touchZone" id="touchOffice" aria-label="Luz de oficina"></button><button class="touchZone" id="touchWindow" aria-label="Luz de ventana"></button><button class="touchZone" id="touchDoor" aria-label="Puerta"></button><button class="touchZone" id="touchDoorLight" aria-label="Luz de puerta"></button><div id="touchHint">CONTROLES TÁCTILES</div></div>
 <div id="keyConfig">
 <h3>⌨️ Controles de teclado</h3><p>Haz clic en una tecla y luego presiona la tecla que quieras usar.</p>
 <div class="keyRow"><span>Ir a la puerta / volver</span><button class="keyBind" data-action="door">E</button></div>
@@ -76,21 +81,25 @@ function update(){
  $("closeDoor").textContent=closed?"Abrir puerta":"Cerrar puerta";
  if(power<=0){playing=false;end("Se acabó la energía.");}
 }
-function end(t){$("message").textContent=t;$("message").style.display="flex";$("controls").style.display="none";$("doorViewControls").style.display="none";}
+function end(t){$("message").textContent=t;$("message").style.display="flex";$("controls").style.display="none";$("touchControls").style.display="none";$("doorViewControls").style.display="none";}
 function scare(){if(!playing)return;playing=false;$("jumpscare").style.display="flex";setTimeout(()=>end("Te atraparon. Recarga la página para jugar otra vez."),900)}
 function enterDoor(){
- if(!playing||atDoor||transitioning)return;transitioning=true;$("controls").style.display="none";$("doorTransition").style.display="block";
+ if(!playing||atDoor||transitioning)return;transitioning=true;$("controls").style.display="none";$("touchControls").style.display="none";$("doorTransition").style.display="block";
  setTimeout(()=>{$("doorTransition").style.display="none";$("rightDoorView").style.display="block";$("doorViewControls").style.display="flex";atDoor=true;transitioning=false;update();
    if(monsterPos>=3&&!closed&&!doorLight)setTimeout(scare,700);
  },850);
 }
 $("goDoor").onclick=enterDoor;
-$("back").onclick=()=>{if(!playing)return;atDoor=false;$("rightDoorView").style.display="none";$("doorViewControls").style.display="none";$("controls").style.display="flex";update()};
+$("back").onclick=()=>{if(!playing)return;atDoor=false;$("rightDoorView").style.display="none";$("doorViewControls").style.display="none";$("controls").style.display="none";$("touchControls").style.display="flex";update()};
 function toggleDoorLight(){doorLight=!doorLight;power-=.6;if(doorLight&&monsterPos>=2)monsterPos=1;update()}
 $("doorLamp").onclick=toggleDoorLight;$("doorLampAtDoor").onclick=toggleDoorLight;
 $("closeDoor").onclick=()=>{closed=!closed;if(closed&&monsterPos>=2)monsterPos=1;power-=1.5;update()};
 $("officeLamp").onclick=()=>{officeLight=!officeLight;power-=.5;update()};
 $("windowLamp").onclick=()=>{windowLight=!windowLight;power-=.7;if(windowLight&&monsterPos===3)monsterPos=1;update()};
+$("touchOffice").onclick=()=>$("officeLamp").click();
+$("touchWindow").onclick=()=>$("windowLamp").click();
+$("touchDoor").onclick=()=>$("goDoor").click();
+$("touchDoorLight").onclick=()=>$("doorLamp").click();
 $("openKeyConfig").onclick=()=>{$("keyConfig").style.display="block";$("openKeyConfig").style.display="none"};
 $("closeKeyConfig").onclick=()=>{$("keyConfig").style.display="none";$("openKeyConfig").style.display="block";waitingAction=null};
 document.querySelectorAll(".keyBind").forEach(b=>b.onclick=()=>{waitingAction=b.dataset.action;b.textContent="PRESIONA..."});

@@ -74,7 +74,7 @@ function update(){
  $("closeDoor").textContent=closed?"Abrir puerta":"Cerrar puerta";
  if(power<=0){playing=false;end("Se acabó la energía.");}
 }
-function end(t){$("message").textContent=t;$("message").style.display="flex";$("controls").style.display="none";$("doorViewControls").style.display="none";}
+function end(t){$("message").textContent=t;$("message").style.display="flex";$("doorViewControls").style.display="none";}
 function scare(){if(!playing)return;playing=false;$("jumpscare").style.display="flex";setTimeout(()=>end("Te atraparon. Recarga la página para jugar otra vez."),900)}
 function enterDoor(){
  if(!playing||atDoor||transitioning)return;transitioning=true;$("controls").style.display="none";$("doorTransition").style.display="block";
@@ -82,16 +82,13 @@ function enterDoor(){
    if(monsterPos>=3&&!closed&&!doorLight)setTimeout(scare,700);
  },850);
 }
-$("goDoor").onclick=enterDoor;
 $("doorArea").addEventListener("dblclick",()=>{if(!atDoor&&!transitioning)enterDoor()});
-$("back").onclick=()=>{if(!playing)return;atDoor=false;$("rightDoorView").style.display="none";$("doorViewControls").style.display="none";$("controls").style.display="flex";update()};
+$("back").onclick=()=>{if(!playing)return;atDoor=false;$("rightDoorView").style.display="none";$("doorViewControls").style.display="none";update()};
 function toggleDoorLight(){doorLight=!doorLight;power-=.6;if(doorLight&&monsterPos>=2)monsterPos=1;update()}
-$("doorLamp").onclick=toggleDoorLight;$("doorLampAtDoor").onclick=toggleDoorLight;
+$("doorLampAtDoor").onclick=toggleDoorLight;
 $("closeDoor").onclick=()=>{closed=!closed;if(closed&&monsterPos>=2)monsterPos=1;power-=1.5;update()};
-$("officeLamp").onclick=()=>{officeLight=!officeLight;power-=.5;update()};
-$("windowLamp").onclick=()=>{windowLight=!windowLight;power-=.7;if(windowLight&&monsterPos===3)monsterPos=1;update()};
-$("openKeyConfig").onclick=()=>{$("keyConfig").style.display="block";$("openKeyConfig").style.display="none"};
-$("closeKeyConfig").onclick=()=>{$("keyConfig").style.display="none";$("openKeyConfig").style.display="block";waitingAction=null};
+
+
 document.querySelectorAll(".keyBind").forEach(b=>b.onclick=()=>{waitingAction=b.dataset.action;b.textContent="PRESIONA..."});
 document.addEventListener("mousemove",e=>{
  if(atDoor||transitioning||!playing)return;

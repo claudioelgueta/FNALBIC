@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FNAF Simple - Texturas editables</title>
+<style>
+*{box-sizing:border-box} body{margin:0;background:#000;color:#ddd;font-family:Arial;overflow:hidden}
+#game{height:100vh;position:relative;background:#050505 url("assets/office.svg") center/cover no-repeat}
+#hud{position:absolute;z-index:20;top:12px;left:15px;right:15px;display:flex;justify-content:space-between;font-size:18px;text-shadow:0 2px 4px #000}
+#window{position:absolute;top:8%;left:50%;transform:translateX(-50%);width:54%;height:58%;background:#000 url("assets/window.svg") center/cover;border:18px solid #151515;box-shadow:inset 0 0 50px #000,0 0 30px #000;overflow:hidden}
+#windowLight{position:absolute;inset:0;background:radial-gradient(circle,#77776a,#292925 45%,#050505 85%);opacity:0;transition:.15s;z-index:2}
+#monster{position:absolute;bottom:3%;left:50%;transform:translateX(-50%);width:180px;height:300px;opacity:0;transition:.2s;z-index:3}
+#monster img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 0 12px #000)}
+#doorArea{position:absolute;right:0;top:0;height:100%;width:22%;overflow:hidden;border-left:8px solid #191919}
+#door{position:absolute;inset:0;background:#333 url("assets/door.svg") center/cover;transition:.35s}
+#door.open{transform:translateX(100%)}
+#doorLight{position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,255,220,.05),rgba(255,255,220,.75));opacity:0;pointer-events:none;transition:.12s;z-index:4}
+#rightDoorView{position:absolute;inset:0;background:#080808 url("assets/office.svg") center/cover;display:none;z-index:24}
+#rightDoorView .hall{position:absolute;right:0;top:0;width:55%;height:100%;background:linear-gradient(90deg,#090909,#222,#050505);border-left:15px solid #151515}
+#rightDoorView .doorTexture{position:absolute;right:8%;top:22%;width:32%;height:58%;background:url("assets/door.svg") center/cover;box-shadow:0 0 40px #000}
+#controls{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:10px;z-index:30;flex-wrap:wrap;justify-content:center}
+#movePanel{position:absolute;bottom:95px;right:4%;display:none;z-index:30}
+button{background:#1c1c1c;color:#eee;border:2px solid #555;padding:13px 18px;border-radius:6px;font-weight:bold;cursor:pointer}
+button:hover{background:#333}
+#blackout{position:absolute;inset:0;background:#000;opacity:.55;pointer-events:none;z-index:40;transition:.1s}
+#message,#jumpscare{position:absolute;inset:0;z-index:100;display:none;align-items:center;justify-content:center;text-align:center}
+#message{font-size:30px;background:rgba(0,0,0,.7)}
+#jumpscare{background:#000}
+#jumpscare img{width:min(55vw,420px);max-height:75vh;object-fit:contain;filter:drop-shadow(0 0 25px white)}
+</style>
+</head>
+<body>
+<div id="game">
+<div id="hud"><div id="time">12 AM</div><div id="power">Energía: 100%</div></div>
+<div id="window"><div id="windowLight"></div><div id="monster"><img src="assets/animatronic.svg"></div></div>
+<div id="doorArea"><div id="door"></div><div id="doorLight"></div></div>
+<div id="rightDoorView"><div class="hall"></div><div class="doorTexture"></div></div>
+<div id="movePanel"><button id="doorClose">Cerrar puerta</button><button id="back">Volver</button></div>
+<div id="controls">
+<button id="goDoor">Ir a la puerta derecha</button>
+<button id="doorLamp">Encender luz de puerta</button>
+<button id="officeLamp">Encender luz oficina</button>
+<button id="windowLamp">Luz de ventana</button>
+</div>
+<div id="blackout"></div><div id="message"></div>
+<div id="jumpscare"><img src="assets/animatronic.svg"></div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+let power=100,hour=0,sec=0,playing=true,atDoor=false,closed=false,doorLight=false,officeLight=false,windowLight=false,monsterPos=0;
+function update(){
+ $("time").textContent=(hour===0?"12":hour)+" AM";
+ $("power").textContent="Energía: "+Math.max(0,Math.floor(power))+"%";
+ $("door").classList.toggle("open",!closed);
+ $("doorLight").style.opacity=doorLight?"1":"0";
+ $("windowLight").style.opacity=windowLight?"1":"0";
+ $("blackout").style.opacity=officeLight?"0":"0.55";
+ $("monster").style.opacity=(windowLight&&monsterPos>=3)||officeLight&&monsterPos>=3?"1":"0";
+ $("doorLamp").textContent=doorLight?"Apagar luz de puerta":"Encender luz de puerta";
+ $("officeLamp").textContent=officeLight?"Apagar luz oficina":"Encender luz oficina";
+ $("windowLamp").textContent=windowLight?"Apagar luz de ventana":"Luz de ventana";
+ if(power<=0){playing=false;end("Se acabó la energía.");}
+}
+function end(t){$("message").textContent=t;$("message").style.display="flex";$("controls").style.display="none";$("movePanel").style.display="none";}
+function scare(){if(!playing)return;playing=false;$("jumpscare").style.display="flex";setTimeout(()=>end("Te atraparon. Recarga la página para jugar otra vez."),900)}
+$("goDoor").onclick=()=>{if(!playing)return;atDoor=true;$("rightDoorView").style.display="block";$("movePanel").style.display="block";$("controls").style.display="none";if(monsterPos>=2&&!closed)setTimeout(scare,300)};
+$("back").onclick=()=>{atDoor=false;$("rightDoorView").style.display="none";$("movePanel").style.display="none";$("controls").style.display="flex"};
+$("doorClose").onclick=()=>{closed=!closed;if(closed&&monsterPos>=2)monsterPos=1;power-=1.5;update()};
+$("doorLamp").onclick=()=>{doorLight=!doorLight;power-=.6;if(doorLight&&monsterPos>=2)monsterPos=1;update()};
+$("officeLamp").onclick=()=>{officeLight=!officeLight;power-=.5;update()};
+$("windowLamp").onclick=()=>{windowLight=!windowLight;power-=.7;if(windowLight&&monsterPos===3)monsterPos=1;update()};
+setInterval(()=>{
+ if(!playing)return;sec++;power-=.07;
+ if(sec%25===0){hour++;if(hour>=6){playing=false;end("¡6 AM! Sobreviviste la noche.");return}}
+ if(sec%8===0){
+   let chance=officeLight||doorLight||windowLight?.18:.10;
+   if(Math.random()<chance&&monsterPos<3)monsterPos++;
+   if(monsterPos===3&&!officeLight&&!windowLight&&Math.random()<.5)monsterPos=2;
+ }
+ if(monsterPos>=2&&atDoor&&!closed&&!doorLight)scare();
+ update();
+},1000);
+update();
+</script>
+</body></html>

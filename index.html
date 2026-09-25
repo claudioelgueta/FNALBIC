@@ -83,6 +83,7 @@ function enterDoor(){
  },850);
 }
 $("goDoor").onclick=enterDoor;
+$("doorArea").addEventListener("dblclick",()=>{if(!atDoor&&!transitioning)enterDoor()});
 $("back").onclick=()=>{if(!playing)return;atDoor=false;$("rightDoorView").style.display="none";$("doorViewControls").style.display="none";$("controls").style.display="flex";update()};
 function toggleDoorLight(){doorLight=!doorLight;power-=.6;if(doorLight&&monsterPos>=2)monsterPos=1;update()}
 $("doorLamp").onclick=toggleDoorLight;$("doorLampAtDoor").onclick=toggleDoorLight;

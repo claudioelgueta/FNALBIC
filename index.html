@@ -2,16 +2,16 @@
 <html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FNAF Simple - Texturas editables</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#000;color:#ddd;font-family:Arial;overflow:hidden}
-#game{height:100vh;position:relative;background:#050505 url("assets/oficina_apagada.svg") center/cover no-repeat}
+#game{height:100vh;position:relative;background:#050505 url("assets/oficina_apagada.png") center/cover no-repeat}
 #hud{position:absolute;z-index:50;top:12px;left:15px;right:15px;display:flex;justify-content:space-between;font-size:18px;text-shadow:0 2px 4px #000}
-#window{position:absolute;top:8%;left:50%;transform:translateX(-50%);width:54%;height:58%;background:#000 url("assets/ventana.svg") center/cover;border:18px solid #151515;box-shadow:inset 0 0 50px #000,0 0 30px #000;overflow:hidden}
-#windowLight{position:absolute;inset:0;background:url("assets/luz_ventana.svg") center/cover no-repeat;opacity:0;transition:.15s;z-index:2}
+#window{position:absolute;top:8%;left:50%;transform:translateX(-50%);width:54%;height:58%;background:#000 url("assets/ventana.png") center/cover;border:18px solid #151515;box-shadow:inset 0 0 50px #000,0 0 30px #000;overflow:hidden}
+#windowLight{position:absolute;inset:0;background:url("assets/luz_ventana.png") center/cover no-repeat;opacity:0;transition:.15s;z-index:2}
 #monster{position:absolute;bottom:3%;left:50%;transform:translateX(-50%);width:180px;height:300px;opacity:0;transition:.2s;z-index:3}#monster img{width:100%;height:100%;object-fit:contain}
-#doorArea{position:absolute;right:0;top:0;height:100%;width:22%;overflow:hidden;border-left:8px solid #191919;background:url("assets/puerta.svg") center/cover}
-#door{position:absolute;inset:0;background:url("assets/puerta.svg") center/cover;transition:.35s}#door.open{transform:translateX(100%)}
-#doorLight{position:absolute;inset:0;background:url("assets/puerta_cerca_encendida.svg") center/cover no-repeat;opacity:0;pointer-events:none;transition:.12s;z-index:4}
-#rightDoorView{position:absolute;inset:0;background:#000 url("assets/pasillo_largo.svg") center/cover no-repeat;display:none;z-index:24}
-#doorTransition{position:absolute;inset:0;background:#000 url("assets/puerta_cerca.svg") center/cover no-repeat;z-index:40;display:none;animation:walk .85s ease-in-out forwards}
+#doorArea{position:absolute;right:0;top:0;height:100%;width:22%;overflow:hidden;border-left:8px solid #191919;background:url("assets/puerta.png") center/cover}
+#door{position:absolute;inset:0;background:url("assets/puerta.png") center/cover;transition:.35s}#door.open{transform:translateX(100%)}
+#doorLight{position:absolute;inset:0;background:url("assets/puerta_cerca_encendida.png") center/cover no-repeat;opacity:0;pointer-events:none;transition:.12s;z-index:4}
+#rightDoorView{position:absolute;inset:0;background:#000 url("assets/pasillo_largo.png") center/cover no-repeat;display:none;z-index:24}
+#doorTransition{position:absolute;inset:0;background:#000 url("assets/puerta_cerca.png") center/cover no-repeat;z-index:40;display:none;animation:walk .85s ease-in-out forwards}
 @keyframes walk{0%{opacity:1;transform:scale(1)}55%{opacity:1;transform:scale(1.12)}100%{opacity:0;transform:scale(1.2)}}
 #doorViewControls{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);display:none;gap:10px;z-index:60}
 #controls{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:10px;z-index:30;flex-wrap:wrap;justify-content:center}
@@ -20,12 +20,12 @@ button{background:#1c1c1c;color:#eee;border:2px solid #555;padding:13px 18px;bor
 #message,#jumpscare{position:absolute;inset:0;z-index:100;display:none;align-items:center;justify-content:center;text-align:center}#message{font-size:30px;background:rgba(0,0,0,.7)}#jumpscare{background:#000}#jumpscare img{width:min(55vw,420px);max-height:75vh;object-fit:contain}
 </style></head><body><div id="game">
 <div id="hud"><div id="time">12 AM</div><div id="power">Energía: 100%</div></div>
-<div id="window"><div id="windowLight"></div><div id="monster"><img src="assets/animatronic.svg"></div></div>
+<div id="window"><div id="windowLight"></div><div id="monster"><img src="assets/animatronic.png"></div></div>
 <div id="doorArea"><div id="door"></div><div id="doorLight"></div></div>
 <div id="rightDoorView"></div><div id="doorTransition"></div>
 <div id="doorViewControls"><button id="doorLampAtDoor">Encender luz</button><button id="back">Volver</button><button id="closeDoor">Cerrar puerta</button></div>
 <div id="controls"><button id="goDoor">Ir a la puerta derecha</button><button id="doorLamp">Encender luz de puerta</button><button id="officeLamp">Encender luz oficina</button><button id="windowLamp">Luz de ventana</button></div>
-<div id="blackout"></div><div id="message"></div><div id="jumpscare"><img src="assets/animatronic.svg"></div>
+<div id="blackout"></div><div id="message"></div><div id="jumpscare"><img src="assets/animatronic.png"></div>
 </div>
 <script>
 const $=id=>document.getElementById(id);
@@ -33,9 +33,9 @@ let power=100,hour=0,sec=0,playing=true,atDoor=false,closed=false,doorLight=fals
 function update(){
  $("time").textContent=(hour===0?"12":hour)+" AM";$("power").textContent="Energía: "+Math.max(0,Math.floor(power))+"%";
  $("door").style.display=atDoor?"none":"block";$("door").classList.toggle("open",!closed);
- $("doorArea").style.backgroundImage=`url("assets/${closed?"puerta_cerca_cerrada":doorLight?"puerta_cerca_encendida":"puerta_cerca"}.svg")`;
+ $("doorArea").style.backgroundImage=`url("assets/${closed?"puerta_cerca_cerrada":doorLight?"puerta_cerca_encendida":"puerta_cerca"}.png")`;
  $("windowLight").style.opacity=windowLight?"1":"0";$("blackout").style.opacity=officeLight?"0":"0.55";
- $("game").style.backgroundImage=`url("assets/${officeLight?"oficina_luz":"oficina_apagada"}.svg")`;
+ $("game").style.backgroundImage=`url("assets/${officeLight?"oficina_luz":"oficina_apagada"}.png")`;
  $("monster").style.opacity=(windowLight&&monsterPos>=3)||officeLight&&monsterPos>=3?"1":"0";
  $("doorLamp").textContent=doorLight?"Apagar luz de puerta":"Encender luz de puerta";
  $("doorLampAtDoor").textContent=doorLight?"Apagar luz":"Encender luz";
